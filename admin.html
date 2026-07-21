@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>UrbanFlex Admin</title>
+
+<link rel="stylesheet" href="assets/css/style.css">
+
+<link rel="stylesheet" href="assets/css/admin.css">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+</head>
+
+<body>
+
+<header class="admin-header">
+
+<div class="admin-logo">
+
+UrbanFlex Admin
+
+</div>
+
+<div class="admin-date">
+
+<span id="todayDate"></span>
+
+</div>
+
+</header>
+
+<section class="dashboard">
+
+<div class="dashboard-card">
+
+<h3>Total Orders</h3>
+
+<h2 id="totalOrders">0</h2>
+
+</div>
+
+<div class="dashboard-card">
+
+<h3>Total Revenue</h3>
+
+<h2 id="totalRevenue">₹0</h2>
+
+</div>
+
+<div class="dashboard-card">
+
+<h3>Pending Orders</h3>
+
+<h2 id="pendingOrders">0</h2>
+
+</div>
+
+</section>
+
+<section class="search-section">
+
+<input
+type="text"
+id="searchOrder"
+placeholder="Search Customer, Phone or Product">
+
+</section>
+
+<section class="orders-section">
+
+<div id="ordersContainer">
+            <!-- Orders will load here -->
+
+    </div>
+
+</section>
+
+<!-- Order Details Modal -->
+
+<div class="modal" id="orderModal">
+
+    <div class="modal-content">
+
+        <span class="close-modal" id="closeModal">&times;</span>
+
+        <h2>Order Details</h2>
+
+        <div id="modalBody">
+
+        </div>
+
+    </div>
+
+</div>
+
+<script src="assets/js/admin.js"></script>
+</body>
+
+</html>

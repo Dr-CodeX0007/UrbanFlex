@@ -1,0 +1,238 @@
+/* ===================================
+            FAQ PAGE
+=================================== */
+
+.faq-hero{
+
+    background:#111;
+
+    color:#fff;
+
+    text-align:center;
+
+    padding:90px 0;
+
+}
+
+.faq-hero h1{
+
+    font-size:52px;
+
+    margin:20px 0;
+
+}
+
+.faq-hero p{
+
+    max-width:700px;
+
+    margin:auto;
+
+    font-size:18px;
+
+    color:#d5d5d5;
+
+    line-height:1.8;
+
+}
+
+.faq-section{
+
+    background:#f8f8f8;
+
+    padding:80px 0;
+
+}
+
+.faq-container{
+
+    max-width:900px;
+
+    margin:auto;
+
+}
+
+.faq-item{
+
+    background:#fff;
+
+    border-radius:14px;
+
+    margin-bottom:20px;
+
+    box-shadow:0 10px 30px rgba(0,0,0,.08);
+
+    overflow:hidden;
+
+}
+
+.faq-question{
+
+    width:100%;
+
+    background:#fff;
+
+    border:none;
+
+    padding:24px 30px;
+
+    text-align:left;
+
+    cursor:pointer;
+
+    font-size:18px;
+
+    font-weight:600;
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    transition:.3s;
+
+}
+
+.faq-question:hover{
+
+    background:#fff6ef;
+
+}
+
+.faq-question span{
+
+    color:#ff7a00;
+
+    font-size:28px;
+
+    font-weight:bold;
+
+}
+
+.faq-answer{
+
+    max-height:0;
+
+    overflow:hidden;
+
+    transition:max-height .35s ease;
+
+}
+
+.faq-answer p{
+
+    padding:0 30px 24px;
+
+    color:#666;
+
+    line-height:1.8;
+
+}
+/* ===================================
+        ACTIVE FAQ
+=================================== */
+
+.faq-item.active .faq-question{
+
+    background:#ff7a00;
+
+    color:#fff;
+
+}
+
+.faq-item.active .faq-question span{
+
+    color:#fff;
+
+    transform:rotate(45deg);
+
+    transition:.3s;
+
+}
+
+.faq-item.active .faq-answer{
+
+    max-height:300px;
+
+}
+
+/* ===================================
+        FOOTER
+=================================== */
+
+.contact-footer{
+
+    background:#111;
+
+    color:#fff;
+
+    text-align:center;
+
+    padding:30px 0;
+
+}
+
+.contact-footer p{
+
+    margin:0;
+
+    color:#d5d5d5;
+
+}
+
+/* ===================================
+        MOBILE
+=================================== */
+
+@media(max-width:768px){
+
+.faq-hero{
+
+padding:70px 0;
+
+}
+
+.faq-hero h1{
+
+font-size:36px;
+
+}
+
+.faq-hero p{
+
+font-size:16px;
+
+padding:0 10px;
+
+}
+
+.faq-section{
+
+padding:60px 0;
+
+}
+
+.faq-question{
+
+font-size:16px;
+
+padding:18px 20px;
+
+}
+
+.faq-question span{
+
+font-size:24px;
+
+}
+
+.faq-answer p{
+
+padding:0 20px 20px;
+
+font-size:15px;
+
+}
+
+}
