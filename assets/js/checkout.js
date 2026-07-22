@@ -98,7 +98,7 @@ function openRazorpay(razorpayOrder, customer) {
 
     const options = {
 
-        key: "rzp_test_TGAf7rlnXtoZu3", // 👈 Apni Test Key ID yahan paste karo
+        key: "rzp_test_TGaD84c5wmLiJw", // 👈 Apni Test Key ID yahan paste karo
 
         amount: razorpayOrder.amount,
 
