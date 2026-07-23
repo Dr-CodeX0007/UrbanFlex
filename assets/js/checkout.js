@@ -269,3 +269,73 @@ async function saveOrder(customer, payment) {
     }
 
 }
+// ===============================
+// PINCODE AUTO FILL (India Post API)
+// ===============================
+
+const pincodeInput = document.getElementById('pincode');
+const cityInput = document.getElementById('city');
+const areaInput = document.getElementById('area');
+const stateSelect = document.getElementById('state');
+
+pincodeInput.addEventListener('input', async () => {
+
+    const pincode = pincodeInput.value.trim();
+
+    // Sirf 6 digit hone par API call
+    if (pincode.length !== 6) {
+        cityInput.value = '';
+        areaInput.value = '';
+        return;
+    }
+
+    try {
+
+        const response = await fetch(
+            `https://api.postalpincode.in/pincode/${pincode}`
+        );
+
+        const data = await response.json();
+
+        // API success check
+        if (
+            data[0].Status === 'Success' &&
+            data[0].PostOffice &&
+            data[0].PostOffice.length > 0
+        ) {
+
+            const postOffice = data[0].PostOffice[0];
+
+            // Auto fill city
+            cityInput.value = postOffice.District || '';
+
+            // Auto fill area
+            areaInput.value = postOffice.Name || '';
+
+            // Auto select state in dropdown
+            const apiState = postOffice.State;
+
+            for (let option of stateSelect.options) {
+                if (option.value === apiState) {
+                    stateSelect.value = apiState;
+                    break;
+                }
+            }
+
+        } else {
+
+            cityInput.value = '';
+            areaInput.value = '';
+
+            alert('Invalid Pincode');
+
+        }
+
+    } catch (error) {
+
+        console.error('Pincode lookup failed:', error);
+
+        alert('Unable to fetch location from pincode');
+
+    }
+});
