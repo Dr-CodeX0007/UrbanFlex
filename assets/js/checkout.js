@@ -304,13 +304,20 @@ pincodeInput.addEventListener('input', async () => {
             data[0].PostOffice.length > 0
         ) {
 
-            const postOffice = data[0].PostOffice[0];
+            // Prefer Assandh if available, otherwise use first post office
+                let postOffice = data[0].PostOffice.find(po =>
+                    po.Name.toLowerCase().includes('assandh')
+);
 
-            // Auto fill city
-            cityInput.value = postOffice.District || '';
+                if (!postOffice) {
+                    postOffice = data[0].PostOffice[0];
+}
 
-            // Auto fill area
-            areaInput.value = postOffice.Name || '';
+// Auto-fill city (editable by customer)
+cityInput.value = postOffice.District || '';
+
+// Auto-fill area (editable by customer)
+areaInput.value = postOffice.Name || '';
 
             // Auto select state in dropdown
             const apiState = postOffice.State;

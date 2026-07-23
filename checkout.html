@@ -47,10 +47,16 @@
 
             <textarea id="address" placeholder="Full Address" required></textarea>
 
-            <input type="text" id="city" placeholder="City" readonly>
-            <input type="text" id="area" placeholder="Area / Locality" readonly>
+            <input type="text" id="city" placeholder="City (auto-filled, editable)">
+            <input type="text" id="area" placeholder="Area / Locality (auto-filled, editable)">
 
-            <select id="state" required>
+            <div class="state-select-wrapper">
+    <select id="state" class="premium-select" required>
+        <option value="">Select State</option>
+        <!-- baaki saare options same rahenge -->
+    </select>
+    <span class="select-arrow">⌄</span>
+</div>
     <option value="">Select State</option>
     <option>Andhra Pradesh</option>
     <option>Arunachal Pradesh</option>
