@@ -24,7 +24,7 @@ async function loadOrders(){
 
     try{
 
-        const response = await fetch("http://localhost:5000/api/orders");
+        const response = await fetch("https://urbanflex.onrender.com/api/orders");
 
         orders = await response.json();
 
@@ -215,7 +215,7 @@ async function updateStatus(id, status){
 
     try{
 
-        const response = await fetch(`http://localhost:5000/api/orders/${id}/status`,{
+        const response = await fetch(`https://urbanflex.onrender.com/api/orders/${id}/status`,{
 
             method:"PUT",
 
@@ -271,7 +271,7 @@ async function deleteOrder(id){
 
     try{
 
-        const response = await fetch(`http://localhost:5000/api/orders/${id}`,{
+        const response = await fetch(`https://urbanflex.onrender.com/api/orders/${id}`,{
 
             method:"DELETE"
 
