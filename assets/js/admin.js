@@ -20,28 +20,44 @@ todayDate.innerText = new Date().toLocaleDateString();
 
 let orders = [];
 
-async function loadOrders(){
+async function loadOrders() {
 
-    try{
+    try {
 
-        const response = await fetch("https://urbanflex.onrender.com/api/orders");
+        console.log("Fetching orders from Render API...");
 
-        orders = await response.json();
+        const response = await fetch("https://urbanflex.onrender.com/api/orders", {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json"
+            }
+        });
 
+        console.log("Response status:", response.status);
+
+        const data = await response.json();
+
+        console.log("Orders received:", data);
+
+        // Force assign all orders
+        orders = Array.isArray(data) ? data : [];
+
+        console.log("Total orders loaded:", orders.length);
+
+        // Render ALL orders regardless of date
         renderDashboard();
-
         renderOrders(orders);
 
+    } catch (error) {
+
+        console.error("Admin load error:", error);
+
+        ordersContainer.innerHTML = `
+            <h2 style="color:red;">
+                Unable to Load Orders.
+            </h2>
+        `;
     }
-
-    catch(error){
-
-        console.error(error);
-
-        ordersContainer.innerHTML="<h2>Unable to Load Orders.</h2>";
-
-    }
-
 }
 function renderDashboard(){
 
