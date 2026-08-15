@@ -1,19 +1,61 @@
 console.log("Hostname:", window.location.hostname);
 console.log("API_BASE_URL:", API_BASE_URL);
 
-const order = JSON.parse(localStorage.getItem("currentOrder"));
+const buyNowOrder = JSON.parse(localStorage.getItem("currentOrder"));
+const checkoutCart = JSON.parse(localStorage.getItem("checkoutCart")) || [];
 
-if (!order) {
+let checkoutItems = [];
+
+if (checkoutCart.length > 0) {
+
+    checkoutItems = checkoutCart.map(item => ({
+        id: item.id,
+        name: item.name,
+        price: Number(item.price),
+        quantity: Number(item.quantity) || 1,
+        image: item.image
+    }));
+
+} else if (buyNowOrder) {
+
+    checkoutItems = [{
+        id: buyNowOrder.id,
+        name: buyNowOrder.name,
+        price: Number(buyNowOrder.price),
+        quantity: 1,
+        image: buyNowOrder.image
+    }];
+
+} else {
+
     alert("No product selected.");
     window.location.href = "index.html";
 }
 
 const summary = document.getElementById("orderSummary");
 
-summary.innerHTML = `
-    <img src="assets/images/products/${order.image}" width="120">
-    <h3>${order.name}</h3>
-    <h2>₹${order.price}</h2>
+const checkoutTotal = checkoutItems.reduce(
+    (total, item) => total + (item.price * item.quantity),
+    0
+);
+
+summary.innerHTML = checkoutItems.map(item => `
+    <div class="checkout-product">
+        <img
+            src="assets/images/products/${item.image}"
+            width="120"
+            alt="${item.name}"
+        >
+
+        <div>
+            <h3>${item.name}</h3>
+            <p>Quantity: ${item.quantity}</p>
+            <h3>₹${item.price * item.quantity}</h3>
+        </div>
+    </div>
+`).join("") + `
+    <hr>
+    <h2>Total: ₹${checkoutTotal}</h2>
 `;
 
 document
@@ -31,13 +73,15 @@ async function startPayment() {
         email: document.getElementById("email").value.trim(),
 
         address:
-            document.getElementById("address").value +
-            ", " +
-            document.getElementById("city").value +
-            ", " +
-            document.getElementById("state").value +
-            " - " +
-            document.getElementById("pincode").value
+    document.getElementById("address").value +
+    ", " +
+    document.getElementById("area").value +
+    ", " +
+    document.getElementById("city").value +
+    ", " +
+    document.getElementById("state").value +
+    " - " +
+    document.getElementById("pincode").value
 
     };
 
@@ -67,9 +111,9 @@ async function startPayment() {
                 "Content-Type": "application/json"
             },
 
-            body: JSON.stringify({
-                amount: order.price
-            })
+           body: JSON.stringify({
+    amount: checkoutTotal
+})
         }
     );
 
@@ -106,7 +150,9 @@ function openRazorpay(razorpayOrder, customer) {
 
         name: "UrbanFlex",
 
-        description: order.name,
+        description: checkoutItems.length === 1
+    ? checkoutItems[0].name
+    : `${checkoutItems.length} UrbanFlex products`,
 
         image: "assets/images/logo.png",
 
@@ -204,13 +250,28 @@ async function saveOrder(customer, payment) {
 
         address: customer.address,
 
-        product: order.name,
+        items: checkoutItems.map(item => ({
+            id: item.id,
+            name: item.name,
+            price: item.price,
+            quantity: item.quantity,
+            total: item.price * item.quantity,
+            image: item.image
+        })),
 
-        quantity: 1,
+        // Backward-compatible fields
+        product: checkoutItems.length === 1
+            ? checkoutItems[0].name
+            : checkoutItems.map(item => item.name).join(", "),
 
-        price: order.price,
+        quantity: checkoutItems.reduce(
+            (total, item) => total + item.quantity,
+            0
+        ),
 
-        total: order.price,
+        price: checkoutTotal,
+
+        total: checkoutTotal,
 
         paymentId: payment.razorpay_payment_id,
 
@@ -224,19 +285,16 @@ async function saveOrder(customer, payment) {
 
     try {
 
-        const response = await fetch(`${API_BASE_URL}/api/orders`,
+        const response = await fetch(
+            `${API_BASE_URL}/api/orders`,
             {
-
                 method: "POST",
 
                 headers: {
-
                     "Content-Type": "application/json"
-
                 },
 
                 body: JSON.stringify(orderData)
-
             }
         );
 
@@ -245,22 +303,23 @@ async function saveOrder(customer, payment) {
         if (result.success) {
 
             localStorage.removeItem("currentOrder");
+            localStorage.removeItem("checkoutCart");
 
-            alert("✅ Payment Successful!\n\nYour order has been placed.");
+            alert(
+                "✅ Payment Successful!\n\nYour order has been placed."
+            );
 
             window.location.href = "index.html";
 
+        } else {
+
+            alert(
+                "Payment received but order could not be saved."
+            );
+
         }
 
-        else {
-
-            alert("Payment received but order could not be saved.");
-
-        }
-
-    }
-
-    catch (err) {
+    } catch (err) {
 
         console.error(err);
 

@@ -50,6 +50,10 @@ const saveOrder = (req, res) => {
             email:req.body.email,
 
             address:req.body.address,
+            
+            items: Array.isArray(req.body.items)
+            ? req.body.items
+            : [],
 
             product:req.body.product,
 

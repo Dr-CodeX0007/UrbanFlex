@@ -105,7 +105,15 @@ function renderOrders(orderList){
 
                 <p><strong>Phone:</strong> ${order.phone}</p>
 
-                <p><strong>Product:</strong> ${order.product}</p>
+                <p><strong>Products:</strong>
+    ${
+        Array.isArray(order.items) && order.items.length > 0
+            ? order.items.map(item =>
+                `${item.name} × ${item.quantity}`
+              ).join("<br>")
+            : `${order.product} × ${order.quantity}`
+    }
+</p>
 
                 <p><strong>Status:</strong> ${order.orderStatus}</p>
 
@@ -174,11 +182,34 @@ function viewOrder(id){
 
         <h3>Order Details</h3>
 
-        <p><strong>Product:</strong> ${order.product}</p>
+        <p>
+    <strong>Products:</strong>
+</p>
 
-        <p><strong>Quantity:</strong> ${order.quantity}</p>
+${
+    Array.isArray(order.items) && order.items.length > 0
+        ? `
+            <div class="order-items">
+                ${order.items.map(item => `
+                    <div style="margin-bottom:10px;">
+                        <strong>${item.name}</strong><br>
+                        Quantity: ${item.quantity}<br>
+                        Price: ₹${item.price}<br>
+                        Item Total: ₹${item.total}
+                    </div>
+                `).join("")}
+            </div>
+        `
+        : `
+            <p>
+                ${order.product}<br>
+                Quantity: ${order.quantity}<br>
+                Price: ₹${order.price}
+            </p>
+        `
+}
 
-        <p><strong>Total:</strong> ₹${order.total}</p>
+<p><strong>Grand Total:</strong> ₹${order.total}</p>
 
         <p><strong>Payment Status:</strong> ${order.paymentStatus}</p>
 
@@ -212,19 +243,36 @@ searchOrder.addEventListener("input",()=>{
 
     const value = searchOrder.value.toLowerCase();
 
-    const filtered = orders.filter(order=>
+    const filtered = orders.filter(order => {
 
-        order.customerName.toLowerCase().includes(value) ||
+    const customerName =
+        (order.customerName || "").toLowerCase();
 
-        order.phone.includes(value) ||
+    const phone =
+        (order.phone || "").toLowerCase();
 
-        order.product.toLowerCase().includes(value)
+    const product =
+        (order.product || "").toLowerCase();
 
+    const itemNames =
+        Array.isArray(order.items)
+            ? order.items
+                .map(item => (item.name || "").toLowerCase())
+                .join(" ")
+            : "";
+
+    return (
+        customerName.includes(value) ||
+        phone.includes(value) ||
+        product.includes(value) ||
+        itemNames.includes(value)
     );
+
+});
 
     renderOrders(filtered);
 
-});
+});const filtered = orders.filter(order=>
 // UPDATE ORDER STATUS
 
 async function updateStatus(id, status){

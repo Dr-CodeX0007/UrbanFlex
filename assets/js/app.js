@@ -67,14 +67,28 @@ searchInput.addEventListener("keyup", function () {
     displayProducts(filteredProducts);
 
 });
-function updateCartCount(){
+function updateCartCount() {
 
     const cart = JSON.parse(localStorage.getItem("cart")) || [];
 
-    const count = cart.reduce((total,item)=>total+item.quantity,0);
+    const count = cart.reduce(
+        (total, item) => total + (Number(item.quantity) || 0),
+        0
+    );
 
-    document.getElementById("cartCount").textContent = count;
+    const cartCount = document.getElementById("cartCount");
 
+    if (cartCount) {
+        cartCount.textContent = count;
+    }
 }
 
+// Update when homepage loads
 updateCartCount();
+
+// Important: update again when browser restores the page
+// from back/forward cache after returning from product/cart pages.
+window.addEventListener("pageshow", updateCartCount);
+
+// Also update when localStorage changes from another tab/window.
+window.addEventListener("storage", updateCartCount);

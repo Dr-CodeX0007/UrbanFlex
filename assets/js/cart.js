@@ -27,23 +27,26 @@ function renderCart() {
 
     if (cart.length === 0) {
 
-        cartItems.innerHTML = `
-            <div class="empty-cart">
-                <h2>Your Cart is Empty</h2>
-                <br>
-                <button class="buy-btn" onclick="location.href='index.html'">
-                    Continue Shopping
-                </button>
-            </div>
-        `;
+    cartItems.innerHTML = `
+        <div class="empty-cart">
+            <h2>Your Cart is Empty</h2>
+            <br>
+            <button class="buy-btn" onclick="location.href='index.html'">
+                Continue Shopping
+            </button>
+        </div>
+    `;
 
-        totalItems.textContent = "0";
-        grandTotal.textContent = "₹0";
+    totalItems.textContent = "0";
+    grandTotal.textContent = "₹0";
 
-        checkoutButton.disabled = true;
+   checkoutButton.disabled = true;
 
-        return;
-    }
+saveCart();
+updateCartCount();
+
+return;
+}
 
     checkoutButton.disabled = false;
 
