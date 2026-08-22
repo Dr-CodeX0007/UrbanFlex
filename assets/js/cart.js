@@ -60,10 +60,10 @@ return;
 
         cartItems.innerHTML += `
 
-        <div class="cart-card">
+               <div class="cart-card">
 
             <img
-                src="assets/images/products/${item.image}"
+                src="${item.image}"
                 alt="${item.name}"
             >
 

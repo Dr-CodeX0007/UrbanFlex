@@ -40,19 +40,20 @@ const checkoutTotal = checkoutItems.reduce(
 );
 
 summary.innerHTML = checkoutItems.map(item => `
-    <div class="checkout-product">
+    
+           <div class="checkout-product">
         <img
-            src="assets/images/products/${item.image}"
+            src="${item.image}"
             width="120"
             alt="${item.name}"
-        >
+        > 
 
         <div>
             <h3>${item.name}</h3>
             <p>Quantity: ${item.quantity}</p>
             <h3>₹${item.price * item.quantity}</h3>
         </div>
-    </div>
+
 `).join("") + `
     <hr>
     <h2>Total: ₹${checkoutTotal}</h2>

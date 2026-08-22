@@ -1,109 +1,158 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-
 <meta charset="UTF-8">
-
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>UrbanFlex Admin</title>
-
 <link rel="stylesheet" href="assets/css/style.css">
-
 <link rel="stylesheet" href="assets/css/admin.css">
-
 <link rel="preconnect" href="https://fonts.googleapis.com">
-
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-
 </head>
-
 <body>
 
+<!-- LOGIN SCREEN -->
+<section id="loginScreen" class="login-screen">
+    <form id="loginForm" class="login-box">
+        <h2>UrbanFlex Admin Login</h2>
+        <input type="email" id="loginEmail" placeholder="Admin Email" required>
+        <input type="password" id="loginPassword" placeholder="Password" required>
+        <button type="submit">Login</button>
+        <p id="loginError" class="login-error"></p>
+    </form>
+</section>
+
+<!-- ADMIN PANEL (hidden until logged in) -->
+<div id="adminPanel" style="display:none;">
+
 <header class="admin-header">
-
-<div class="admin-logo">
-
-UrbanFlex Admin
-
-</div>
-
-<div class="admin-date">
-
-<span id="todayDate"></span>
-
-</div>
-
+    <div class="admin-logo">UrbanFlex Admin</div>
+    <div class="admin-header-right">
+        <span class="admin-date" id="todayDate"></span>
+        <button id="logoutBtn" class="logout-btn">Logout</button>
+    </div>
 </header>
 
-<section class="dashboard">
+<nav class="admin-tabs">
+    <button class="tab-btn active" data-tab="ordersTab">Orders</button>
+    <button class="tab-btn" data-tab="productsTab">Products</button>
+    <button class="tab-btn" data-tab="categoriesTab">Categories</button>
+</nav>
 
-<div class="dashboard-card">
+<!-- ORDERS TAB -->
+<div id="ordersTab" class="tab-panel active">
+    <section class="dashboard">
+        <div class="dashboard-card">
+            <h3>Total Orders</h3>
+            <h2 id="totalOrders">0</h2>
+        </div>
+        <div class="dashboard-card">
+            <h3>Total Revenue</h3>
+            <h2 id="totalRevenue">₹0</h2>
+        </div>
+        <div class="dashboard-card">
+            <h3>Pending Orders</h3>
+            <h2 id="pendingOrders">0</h2>
+        </div>
+    </section>
 
-<h3>Total Orders</h3>
+    <section class="search-section">
+        <input type="text" id="searchOrder" placeholder="Search Customer, Phone or Product">
+    </section>
 
-<h2 id="totalOrders">0</h2>
-
+    <section class="orders-section">
+        <div id="ordersContainer"></div>
+    </section>
 </div>
 
-<div class="dashboard-card">
+<!-- PRODUCTS TAB -->
+<div id="productsTab" class="tab-panel">
+    <section class="admin-form-section">
+        <h3 id="productFormTitle">Add Product</h3>
+        <form id="productForm" class="admin-form">
+            <input type="hidden" id="productId">
 
-<h3>Total Revenue</h3>
+            <label class="field-label">Product Name</label>
+            <input type="text" id="productName" placeholder="e.g. Wall Mounted Pull-up Bar" required>
 
-<h2 id="totalRevenue">₹0</h2>
+            <label class="field-label">Category</label>
+            <select id="productCategory" required></select>
 
+            <label class="field-label">MRP (₹)</label>
+            <input type="number" id="productMrp" placeholder="e.g. 1200" required min="1">
+
+            <label class="field-label">Discount %</label>
+            <input type="number" id="productDiscount" placeholder="e.g. 40" min="0" max="90" value="0">
+
+            <div id="pricePreview" class="price-preview">Final price: ₹0</div>
+
+            <label class="field-label">Delivery Days</label>
+            <input type="number" id="productDeliveryDays" placeholder="e.g. 5" min="1" value="5">
+
+            <label class="field-label">Description</label>
+            <textarea id="productDescription" placeholder="Short paragraph about the product"></textarea>
+
+            <label class="field-label">Bullet Points</label>
+            <textarea id="productBullets" placeholder="One point per line, e.g.&#10;Heavy-duty steel frame&#10;Easy to install"></textarea>
+
+            <label class="checkbox-label">
+                <input type="checkbox" id="productBestseller"> Mark as Bestseller
+            </label>
+            <label class="upload-label">
+                Product Images (first = main image)
+                <input type="file" id="productImages" accept="image/*" multiple>
+            </label>
+            <div id="productImagePreview" class="image-preview-row"></div>
+            <div class="form-actions">
+                <button type="submit" id="productSubmitBtn">Add Product</button>
+                <button type="button" id="productCancelEdit" style="display:none;">Cancel Edit</button>
+            </div>
+        </form>
+    </section>
+
+    <section class="search-section">
+        <input type="text" id="searchProduct" placeholder="Search products by name">
+    </section>
+
+    <section class="admin-grid" id="productsContainer"></section>
 </div>
 
-<div class="dashboard-card">
+<!-- CATEGORIES TAB -->
+<div id="categoriesTab" class="tab-panel">
+    <section class="admin-form-section">
+        <h3 id="categoryFormTitle">Add Category</h3>
+        <form id="categoryForm" class="admin-form">
+                        <input type="hidden" id="categoryId">
+            <label class="field-label">Category Name</label>
+            <input type="text" id="categoryName" placeholder="e.g. Gym Equipment" required>
+            <label class="upload-label">
+                Category Image (optional)
+                <input type="file" id="categoryImage" accept="image/*">
+            </label>
+            <div id="categoryImagePreview" class="image-preview-row"></div>
+            <div class="form-actions">
+                <button type="submit" id="categorySubmitBtn">Add Category</button>
+                <button type="button" id="categoryCancelEdit" style="display:none;">Cancel Edit</button>
+            </div>
+        </form>
+    </section>
 
-<h3>Pending Orders</h3>
-
-<h2 id="pendingOrders">0</h2>
-
+    <section class="admin-grid" id="categoriesContainer"></section>
 </div>
-
-</section>
-
-<section class="search-section">
-
-<input
-type="text"
-id="searchOrder"
-placeholder="Search Customer, Phone or Product">
-
-</section>
-
-<section class="orders-section">
-
-<div id="ordersContainer">
-            <!-- Orders will load here -->
-
-    </div>
-
-</section>
 
 <!-- Order Details Modal -->
-
 <div class="modal" id="orderModal">
-
     <div class="modal-content">
-
         <span class="close-modal" id="closeModal">&times;</span>
-
         <h2>Order Details</h2>
-
-        <div id="modalBody">
-
-        </div>
-
+        <div id="modalBody"></div>
     </div>
+</div>
 
 </div>
 
+<script src="assets/js/config.js"></script>
 <script src="assets/js/admin.js"></script>
 </body>
-
 </html>

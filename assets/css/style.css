@@ -53,6 +53,108 @@ header{
 
     color:#fff;
 }
+/* ===========================
+   BANNER CAROUSEL
+=========================== */
+
+.banner-carousel{
+    position:relative;
+    width:100%;
+    max-width:1300px;
+    margin:20px auto 0;
+    border-radius:16px;
+    overflow:hidden;
+    box-shadow:0 15px 40px rgba(0,0,0,.35);
+}
+
+.banner-track{
+    display:flex;
+    transition:transform .6s ease;
+}
+
+.banner-slide{
+    min-width:100%;
+    height:380px;
+    background-size:cover;
+    background-position:center;
+    display:flex;
+    align-items:center;
+    padding:0 60px;
+}
+
+.banner-slide-promo{
+    background:linear-gradient(120deg, #ff6b00, #ff8c3d);
+}
+
+.banner-content{
+    max-width:520px;
+    color:#fff;
+}
+
+.banner-tag{
+    display:inline-block;
+    background:rgba(255,255,255,.15);
+    padding:6px 16px;
+    border-radius:20px;
+    font-size:13px;
+    font-weight:600;
+    letter-spacing:.5px;
+    text-transform:uppercase;
+    margin-bottom:14px;
+}
+
+.banner-content h2{
+    font-size:36px;
+    font-weight:700;
+    margin-bottom:12px;
+    line-height:1.2;
+}
+
+.banner-content p{
+    font-size:16px;
+    opacity:.9;
+}
+
+.banner-dots{
+    position:absolute;
+    bottom:18px;
+    left:50%;
+    transform:translateX(-50%);
+    display:flex;
+    gap:8px;
+}
+
+.banner-dot{
+    width:9px;
+    height:9px;
+    border-radius:50%;
+    border:none;
+    background:rgba(255,255,255,.5);
+    cursor:pointer;
+    padding:0;
+    transition:.25s;
+}
+
+.banner-dot.active{
+    background:#ff6b00;
+    width:24px;
+    border-radius:5px;
+}
+
+/* ===========================
+   PRODUCTS
+=========================== */
+
+.product-grid{
+
+    display:grid;
+
+    grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+
+    gap:25px;
+
+    padding:35px 0;
+}
 
 .logo span{
 
@@ -102,20 +204,7 @@ header{
     font-weight:600;
 }
 
-/* ===========================
-   PRODUCTS
-=========================== */
 
-.product-grid{
-
-    display:grid;
-
-    grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
-
-    gap:25px;
-
-    padding:35px 0;
-}
 
 /* ===========================
    PRODUCT CARD
@@ -177,6 +266,77 @@ header{
 
     margin:15px 0;
 }
+.mrp-strike{
+    color:#999;
+    font-size:16px;
+    font-weight:400;
+    text-decoration:line-through;
+    margin-left:10px;
+}
+
+.discount-tag{
+    background:#e8f5e9;
+    color:#1b7a1b;
+    font-size:14px;
+    font-weight:600;
+    padding:3px 10px;
+    border-radius:6px;
+    margin-left:10px;
+    display:inline-block;
+}
+
+.bestseller-badge{
+    background:#fff3cd;
+    color:#856404;
+    font-size:13px;
+    font-weight:600;
+    padding:3px 10px;
+    border-radius:6px;
+    margin-left:10px;
+    display:inline-block;
+}
+
+.return-policy{
+    color:#2e7d32;
+    font-size:14px;
+    font-weight:600;
+    margin:8px 0;
+}
+
+.delivery-estimate{
+    color:#555;
+    font-size:14px;
+    margin-bottom:12px;
+}
+
+.thumbnail-row{
+    display:flex;
+    gap:10px;
+    margin-top:12px;
+    flex-wrap:wrap;
+}
+
+.thumbnail-row .thumbnail{
+    width:60px;
+    height:60px;
+    object-fit:cover;
+    border-radius:8px;
+    border:2px solid transparent;
+    cursor:pointer;
+    opacity:.7;
+}
+
+.thumbnail-row .thumbnail.active{
+    border-color:#ff6b00;
+    opacity:1;
+}
+
+.bullet-points{
+    margin:15px 0;
+    padding-left:20px;
+    color:#444;
+    line-height:1.8;
+}
 
 .buy-btn{
 
@@ -219,9 +379,113 @@ header{
         width:100%;
     }
 
-    #cartButton{
+       #cartButton{
 
         width:100%;
+    }
+
+    /* 2 products per row on mobile, compact premium cards */
+    .product-grid{
+        grid-template-columns:repeat(2, 1fr);
+        gap:12px;
+        padding:20px 0;
+    }
+
+    .product-card{
+        padding-bottom:12px;
+        border-radius:10px;
+    }
+
+    .product-card img{
+        height:130px;
+    }
+
+    .rating{
+        margin-top:8px;
+        font-size:12px;
+    }
+
+    .product-name{
+        font-size:14px;
+        margin-top:6px;
+        padding:0 8px;
+        min-height:36px;
+        overflow:hidden;
+        display:-webkit-box;
+        -webkit-line-clamp:2;
+        -webkit-box-orient:vertical;
+    }
+
+    .price{
+        font-size:18px;
+        margin:8px 0 4px;
+    }
+
+    .mrp-strike{
+        font-size:12px;
+        margin-left:6px;
+    }
+
+    .discount-tag{
+        font-size:11px;
+        padding:2px 7px;
+        margin:4px 4px 4px 0;
+    }
+
+    .return-policy{
+        font-size:11px;
+        margin:4px 8px;
+    }
+
+    .delivery-estimate{
+        font-size:11px;
+        margin-bottom:8px;
+        padding:0 8px;
+    }
+
+    .buy-btn{
+        width:90%;
+        height:36px;
+        font-size:13px;
+    }
+
+    /* Banner carousel on mobile */
+    .banner-carousel{
+        border-radius:10px;
+        margin-top:12px;
+    }
+
+    .banner-slide{
+        height:200px;
+        padding:0 20px;
+    }
+
+    .banner-tag{
+        font-size:10px;
+        padding:4px 10px;
+        margin-bottom:8px;
+    }
+
+    .banner-content h2{
+        font-size:20px;
+        margin-bottom:6px;
+    }
+
+    .banner-content p{
+        font-size:12px;
+    }
+
+    .banner-dots{
+        bottom:10px;
+    }
+
+    .banner-dot{
+        width:6px;
+        height:6px;
+    }
+
+    .banner-dot.active{
+        width:16px;
     }
 
 }
