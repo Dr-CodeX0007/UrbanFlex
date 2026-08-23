@@ -203,9 +203,51 @@ const deleteOrder = (req, res) => {
 
 };
 
+// GET ORDERS FOR THE LOGGED-IN CUSTOMER
+// Matches by customerId when available (orders placed while logged in),
+// falling back to email match (covers guest checkouts under the same email).
+
+const getMyOrders = (req, res) => {
+
+    try {
+
+        const orders = JSON.parse(fs.readFileSync(filePath, "utf8"));
+
+        const myEmail = (req.customer.email || "").toLowerCase();
+        const myId = req.customer.id;
+
+        const myOrders = orders.filter(order =>
+            (order.customerId && order.customerId === myId) ||
+            (order.email && order.email.toLowerCase() === myEmail)
+        );
+
+        myOrders.sort((a, b) => b.id - a.id);
+
+        res.status(200).json(myOrders);
+
+    }
+
+    catch (error) {
+
+        console.error(error);
+
+        res.status(500).json({
+
+            success:false,
+
+            message:"Unable to load your orders."
+
+        });
+
+    }
+
+};
+
 module.exports = {
 
     getAllOrders,
+
+    getMyOrders,
 
     saveOrder,
 

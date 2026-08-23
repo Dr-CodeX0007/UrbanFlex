@@ -2,9 +2,13 @@ const express = require("express");
 
 const router = express.Router();
 
+const protectCustomer = require("../middleware/customerAuthMiddleware");
+
 const {
 
     getAllOrders,
+
+    getMyOrders,
 
     saveOrder,
 
@@ -15,6 +19,8 @@ const {
 } = require("../controllers/orderController");
 
 router.get("/", getAllOrders);
+
+router.get("/my-orders", protectCustomer, getMyOrders);
 
 router.post("/", saveOrder);
 

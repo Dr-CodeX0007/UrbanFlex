@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Login | UrbanFlex</title>
+<link rel="stylesheet" href="assets/css/style.css">
+<link rel="stylesheet" href="assets/css/auth.css">
+</head>
+<body>
+
+<header>
+    <div class="container navbar">
+        <a href="index.html" class="logo">Urban<span>Flex</span></a>
+    </div>
+</header>
+
+<div class="auth-page">
+    <div class="auth-box">
+
+        <a href="index.html" class="auth-back">&larr; Back to shopping</a>
+
+        <h2>Welcome Back</h2>
+        <p class="auth-subtitle">Log in to your UrbanFlex account</p>
+
+        <form id="loginForm">
+            <input type="email" id="loginEmail" placeholder="Email address" required>
+            <input type="password" id="loginPassword" placeholder="Password" required>
+            <button type="submit" id="loginSubmitBtn">Log In</button>
+            <p class="auth-error" id="loginError"></p>
+        </form>
+
+        <p class="auth-switch">
+            Don't have an account? <a href="signup.html">Sign up</a>
+        </p>
+
+    </div>
+</div>
+
+<script src="assets/js/config.js"></script>
+<script src="assets/js/customerAuth.js"></script>
+<script>
+    const loginForm = document.getElementById("loginForm");
+    const loginError = document.getElementById("loginError");
+    const loginSubmitBtn = document.getElementById("loginSubmitBtn");
+
+    // If already logged in, skip straight to the account page.
+    if (getCustomerToken()) {
+        window.location.href = "account.html";
+    }
+
+    loginForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        loginError.innerText = "";
+
+        const email = document.getElementById("loginEmail").value.trim();
+        const password = document.getElementById("loginPassword").value;
+
+        try {
+            loginSubmitBtn.disabled = true;
+            loginSubmitBtn.innerText = "Logging in...";
+
+            const res = await fetch(`${API_BASE_URL}/api/customer/login`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ email, password })
+            });
+            const data = await res.json();
+
+            if (!data.success) {
+                loginError.innerText = data.message || "Login failed.";
+                return;
+            }
+
+            saveCustomerSession(data.token, data.customer);
+            window.location.href = "account.html";
+        } catch (error) {
+            console.error(error);
+            loginError.innerText = "Unable to reach server. Please try again.";
+        } finally {
+            loginSubmitBtn.disabled = false;
+            loginSubmitBtn.innerText = "Log In";
+        }
+    });
+</script>
+
+</body>
+</html>

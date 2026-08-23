@@ -12,6 +12,7 @@ const paymentRoutes = require("./routes/paymentRoutes");
 const productRoutes = require("./routes/productRoutes");
 const categoryRoutes = require("./routes/categoryRoutes");
 const authRoutes = require("./routes/authRoutes");
+const customerAuthRoutes = require("./routes/customerAuthRoutes");
 
 // Connect to MongoDB
 connectDB();
@@ -37,6 +38,7 @@ app.use("/api/payment", paymentRoutes);
 app.use("/api/products", productRoutes);
 app.use("/api/categories", categoryRoutes);
 app.use("/api/auth", authRoutes);
+app.use("/api/customer", customerAuthRoutes);
 
 const PORT = process.env.PORT || 5000;
 

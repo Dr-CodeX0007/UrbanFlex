@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sign Up | UrbanFlex</title>
+<link rel="stylesheet" href="assets/css/style.css">
+<link rel="stylesheet" href="assets/css/auth.css">
+</head>
+<body>
+
+<header>
+    <div class="container navbar">
+        <a href="index.html" class="logo">Urban<span>Flex</span></a>
+    </div>
+</header>
+
+<div class="auth-page">
+    <div class="auth-box">
+
+        <a href="index.html" class="auth-back">&larr; Back to shopping</a>
+
+        <h2>Create Account</h2>
+        <p class="auth-subtitle">Join UrbanFlex to track your orders</p>
+
+        <form id="signupForm">
+            <input type="text" id="signupName" placeholder="Full name" required>
+            <input type="email" id="signupEmail" placeholder="Email address" required>
+            <input type="tel" id="signupPhone" placeholder="Phone number (optional)">
+            <input type="password" id="signupPassword" placeholder="Password (min 6 characters)" required minlength="6">
+            <button type="submit" id="signupSubmitBtn">Create Account</button>
+            <p class="auth-error" id="signupError"></p>
+        </form>
+
+        <p class="auth-switch">
+            Already have an account? <a href="login.html">Log in</a>
+        </p>
+
+    </div>
+</div>
+
+<script src="assets/js/config.js"></script>
+<script src="assets/js/customerAuth.js"></script>
+<script>
+    const signupForm = document.getElementById("signupForm");
+    const signupError = document.getElementById("signupError");
+    const signupSubmitBtn = document.getElementById("signupSubmitBtn");
+
+    if (getCustomerToken()) {
+        window.location.href = "account.html";
+    }
+
+    signupForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        signupError.innerText = "";
+
+        const name = document.getElementById("signupName").value.trim();
+        const email = document.getElementById("signupEmail").value.trim();
+        const phone = document.getElementById("signupPhone").value.trim();
+        const password = document.getElementById("signupPassword").value;
+
+        try {
+            signupSubmitBtn.disabled = true;
+            signupSubmitBtn.innerText = "Creating account...";
+
+            const res = await fetch(`${API_BASE_URL}/api/customer/signup`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ name, email, phone, password })
+            });
+            const data = await res.json();
+
+            if (!data.success) {
+                signupError.innerText = data.message || "Signup failed.";
+                return;
+            }
+
+            saveCustomerSession(data.token, data.customer);
+            window.location.href = "account.html";
+        } catch (error) {
+            console.error(error);
+            signupError.innerText = "Unable to reach server. Please try again.";
+        } finally {
+            signupSubmitBtn.disabled = false;
+            signupSubmitBtn.innerText = "Create Account";
+        }
+    });
+</script>
+
+</body>
+</html>

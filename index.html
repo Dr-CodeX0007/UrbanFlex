@@ -29,28 +29,18 @@
 
         </a>
 
-        <nav class="nav-links">
+        <div class="search-box">
 
-            <a href="index.html">Home</a>
+            <input
+                type="text"
+                id="searchInput"
+                placeholder="Search Products...">
 
-            <a href="about.html">About</a>
-
-            <a href="contact.html">Contact</a>
-
-            <a href="faq.html">FAQ</a>
-
-        </nav>
+        </div>
 
         <div class="nav-right">
 
-            <div class="search-box">
-
-                <input
-                    type="text"
-                    id="searchInput"
-                    placeholder="Search Products...">
-
-            </div>
+            <button id="navAuthBtn" class="nav-auth-btn"></button>
 
             <button id="cartButton" onclick="location.href='cart.html'">
 
@@ -130,6 +120,26 @@
         </div>
 
         <div class="banner-dots" id="bannerDots"></div>
+                <div class="sort-by-wrap">
+            <button class="sort-by-btn" id="sortByBtn">⇅ Sort By</button>
+            <div class="sort-by-menu" id="sortByMenu">
+                <button data-sort="category">Category</button>
+                <button data-sort="latest">Latest</button>
+                <button data-sort="price_asc">Price: Low to High</button>
+                <button data-sort="price_desc">Price: High to Low</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- =========================
+            CATEGORIES
+    ========================== -->
+
+    <section class="categories-section">
+        <div class="container">
+            <div class="categories-row" id="categoriesRow"></div>
+        </div>
+    </section>
     </section>
 
     <!-- =========================
@@ -407,6 +417,8 @@
 </footer>
 
        <script src="assets/js/config.js"></script>
+
+    <script src="assets/js/customerAuth.js"></script>
 
     <script src="assets/js/banner.js"></script>
 

@@ -1,6 +1,19 @@
 console.log("Hostname:", window.location.hostname);
 console.log("API_BASE_URL:", API_BASE_URL);
 
+// Prefill name/email if the shopper is logged in
+if (typeof getCustomerData === "function") {
+    const loggedInCustomer = getCustomerData();
+    if (loggedInCustomer) {
+        window.addEventListener("DOMContentLoaded", () => {
+            const nameField = document.getElementById("name");
+            const emailField = document.getElementById("email");
+            if (nameField && !nameField.value) nameField.value = loggedInCustomer.name;
+            if (emailField && !emailField.value) emailField.value = loggedInCustomer.email;
+        });
+    }
+}
+
 const buyNowOrder = JSON.parse(localStorage.getItem("currentOrder"));
 const checkoutCart = JSON.parse(localStorage.getItem("checkoutCart")) || [];
 
@@ -241,9 +254,13 @@ function openRazorpay(razorpayOrder, customer) {
 }
 async function saveOrder(customer, payment) {
 
+    const loggedInCustomer = (typeof getCustomerData === "function") ? getCustomerData() : null;
+
     const orderData = {
 
         customerName: customer.name,
+
+        customerId: loggedInCustomer ? loggedInCustomer.id : null,
 
         phone: customer.phone,
 
