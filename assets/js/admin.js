@@ -151,17 +151,22 @@ function renderOrders(orderList) {
                             : `${order.product} × ${order.quantity}`
                     }
                 </p>
-                <p><strong>Status:</strong> ${order.orderStatus}</p>
+                <p><strong>Status:</strong> <span class="status-badge status-${order.orderStatus.toLowerCase().replace(/\s+/g, "-")}">${order.orderStatus}</span></p>
                 <p><strong>Payment:</strong> ${order.paymentStatus}</p>
             </div>
             <div class="order-right">
                 <div class="order-price">₹${order.total}</div>
                 <button class="view-btn" onclick="viewOrder(${order.id})">View Details</button>
                 <div class="admin-actions">
-                    <button onclick="updateStatus(${order.id},'Confirmed')">Confirm</button>
-                    <button onclick="updateStatus(${order.id},'Shipped')">Ship</button>
-                    <button onclick="updateStatus(${order.id},'Delivered')">Deliver</button>
-                    <button onclick="deleteOrder(${order.id})">Delete</button>
+                    <select class="status-select" onchange="updateStatus(${order.id}, this.value)">
+                        <option value="">Update status...</option>
+                        <option value="Confirmed" ${order.orderStatus === "Confirmed" ? "selected" : ""}>Confirmed</option>
+                        <option value="Packed" ${order.orderStatus === "Packed" ? "selected" : ""}>Packed</option>
+                        <option value="Dispatched" ${order.orderStatus === "Dispatched" ? "selected" : ""}>Dispatched</option>
+                        <option value="Out for Delivery" ${order.orderStatus === "Out for Delivery" ? "selected" : ""}>Out for Delivery</option>
+                        <option value="Delivered" ${order.orderStatus === "Delivered" ? "selected" : ""}>Delivered</option>
+                    </select>
+                    <button class="delete-order-btn" onclick="deleteOrder(${order.id})">Delete</button>
                 </div>
             </div>
         </div>
@@ -238,6 +243,8 @@ searchOrder.addEventListener("input", () => {
 });
 
 async function updateStatus(id, status) {
+    if (!status) return;
+
     try {
         const response = await fetch(`${API}/api/orders/${id}/status`, {
             method: "PUT",
@@ -351,6 +358,53 @@ function populateProductCategoryDropdown() {
 
     select.innerHTML = categories.map((cat) => `<option value="${cat._id}">${cat.name}</option>`).join("");
 }
+
+// ---------- Apparel (Upper/Bottom) size fields ----------
+const SIZES_UPPER = ["S", "M", "L", "XL", "XXL"];
+const SIZES_BOTTOM = ["26", "28", "32", "34", "36", "38", "40"];
+
+function isApparelCategory(categoryId) {
+    const cat = categories.find((c) => c._id === categoryId);
+    if (!cat) return false;
+
+    const n = cat.name.toLowerCase();
+    return n.includes("outfit") || n.includes("wear") || n.includes("cloth") || n.includes("apparel");
+}
+
+function renderSizeCheckboxes(type, checkedSizes = []) {
+    const row = document.getElementById("sizeCheckboxRow");
+    const sizes = type === "Upper" ? SIZES_UPPER : type === "Bottom" ? SIZES_BOTTOM : [];
+
+    row.innerHTML = sizes.map((size) => `
+        <label class="size-checkbox-label">
+            <input type="checkbox" value="${size}" ${checkedSizes.includes(size) ? "checked" : ""}>
+            ${size}
+        </label>
+    `).join("");
+}
+
+function checkApparelSection() {
+    const categoryId = document.getElementById("productCategory").value;
+    const apparelSection = document.getElementById("apparelSection");
+
+    if (isApparelCategory(categoryId)) {
+        apparelSection.style.display = "block";
+    } else {
+        apparelSection.style.display = "none";
+        document.getElementById("productApparelType").value = "";
+        document.getElementById("sizeCheckboxRow").innerHTML = "";
+    }
+}
+
+function setupApparelFields() {
+    document.getElementById("productCategory")?.addEventListener("change", checkApparelSection);
+
+    document.getElementById("productApparelType")?.addEventListener("change", (e) => {
+        renderSizeCheckboxes(e.target.value);
+    });
+}
+
+setupApparelFields();
 
 categoryImageInput?.addEventListener("change", () => {
     const file = categoryImageInput.files[0];
@@ -562,6 +616,11 @@ function setupProductForm() {
                 imageUrls = await Promise.all(pendingProductImageFiles.map(uploadToCloudinary));
             }
 
+            const apparelType = document.getElementById("productApparelType").value;
+            const availableSizes = Array.from(
+                document.querySelectorAll("#sizeCheckboxRow input:checked")
+            ).map((cb) => cb.value);
+
             const payload = {
                 name,
                 category,
@@ -570,7 +629,9 @@ function setupProductForm() {
                 deliveryDays,
                 description,
                 bulletPoints,
-                isBestseller
+                isBestseller,
+                apparelType,
+                availableSizes
             };
             if (imageUrls) payload.images = imageUrls;
 
@@ -614,6 +675,8 @@ function resetProductForm() {
     productSubmitBtn.innerText = "Add Product";
     productCancelEdit.style.display = "none";
     updatePricePreview();
+    document.getElementById("apparelSection").style.display = "none";
+    document.getElementById("sizeCheckboxRow").innerHTML = "";
 }
 
 function editProduct(id) {
@@ -631,6 +694,10 @@ function editProduct(id) {
     document.getElementById("productBestseller").checked = !!p.isBestseller;
 
     productImagePreview.innerHTML = (p.images || []).map((img) => `<img src="${img}">`).join("");
+
+    checkApparelSection();
+    document.getElementById("productApparelType").value = p.apparelType || "";
+    renderSizeCheckboxes(p.apparelType || "", p.availableSizes || []);
 
     productFormTitle.innerText = "Edit Product";
     productSubmitBtn.innerText = "Update Product";

@@ -548,3 +548,108 @@ body{
         width:95%;
     }
 }
+
+/* ===== Order status badges & update dropdown ===== */
+
+.admin-actions{
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+    margin-top:10px;
+}
+
+.status-select{
+    padding:9px 12px;
+    border-radius:8px;
+    border:1px solid #ddd;
+    font-size:14px;
+    background:#fff;
+    cursor:pointer;
+}
+
+.delete-order-btn{
+    background:#ffe1e1;
+    color:#c0392b;
+    border:none;
+    padding:9px 12px;
+    border-radius:8px;
+    cursor:pointer;
+    font-size:14px;
+    font-weight:600;
+}
+
+.status-badge{
+    display:inline-block;
+    padding:3px 10px;
+    border-radius:6px;
+    font-size:13px;
+    font-weight:600;
+}
+
+.status-pending{
+    background:#fff3cd;
+    color:#856404;
+}
+
+.status-confirmed{
+    background:#d1ecf1;
+    color:#0c5460;
+}
+
+.status-packed{
+    background:#e2d9f3;
+    color:#4a2f8f;
+}
+
+.status-dispatched{
+    background:#fde3cf;
+    color:#a4530a;
+}
+
+.status-out-for-delivery{
+    background:#ffe0b2;
+    color:#8a4b00;
+}
+
+.status-delivered{
+    background:#d4edda;
+    color:#155724;
+}
+
+/* ===== Apparel size selection (admin product form) ===== */
+
+.size-checkbox-row{
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px;
+}
+
+.size-checkbox-label{
+    display:flex;
+    align-items:center;
+    gap:6px;
+    background:#f5f5f5;
+    padding:8px 14px;
+    border-radius:8px;
+    font-size:14px;
+    cursor:pointer;
+    border:1.5px solid #eee;
+}
+
+.size-checkbox-label:has(input:checked){
+    background:#fff3e6;
+    border-color:#ff6b00;
+    color:#ff6b00;
+    font-weight:600;
+}
+
+#apparelSection select{
+    padding:12px 15px;
+    border:1px solid #ddd;
+    border-radius:8px;
+    font-size:15px;
+    outline:none;
+    font-family:inherit;
+    width:100%;
+    margin-bottom:6px;
+}

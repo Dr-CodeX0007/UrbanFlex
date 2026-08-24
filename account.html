@@ -111,7 +111,14 @@
             const orders = await res.json();
 
             if (orders.length === 0) {
-                ordersList.innerHTML = `<p class="order-empty">You haven't placed any orders yet.</p>`;
+                ordersList.innerHTML = `
+                    <div class="empty-orders">
+                        <div class="empty-orders-icon">📦</div>
+                        <h3>No orders yet</h3>
+                        <p>When you place an order, it'll show up here.</p>
+                        <button class="buy-btn" onclick="location.href='index.html'">Start Shopping</button>
+                    </div>
+                `;
                 return;
             }
 
@@ -122,7 +129,7 @@
                             <strong>${order.product}</strong>
                             <p class="order-history-date">${order.orderDate}</p>
                         </div>
-                        <span class="order-status-tag">${order.orderStatus}</span>
+                        <span class="order-status-tag status-${order.orderStatus.toLowerCase().replace(/\s+/g, "-")}">${order.orderStatus}</span>
                     </div>
                     <div class="order-history-bottom">
                         <span>Qty: ${order.quantity}</span>

@@ -29,8 +29,9 @@ function renderCart() {
 
     cartItems.innerHTML = `
         <div class="empty-cart">
+            <div class="empty-cart-icon">🛒</div>
             <h2>Your Cart is Empty</h2>
-            <br>
+            <p>Looks like you haven't added anything yet.<br>Explore our gym equipment and find your fit.</p>
             <button class="buy-btn" onclick="location.href='index.html'">
                 Continue Shopping
             </button>
@@ -71,21 +72,23 @@ return;
 
                 <h3>${item.name}</h3>
 
+                ${item.size ? `<p class="cart-item-size">Size: ${item.size}</p>` : ""}
+
                 <p>₹${item.price}</p>
 
                 <div class="qty-box">
 
-                    <button onclick="decreaseQty(${item.id})">−</button>
+                    <button onclick="decreaseQty('${item.id}')">−</button>
 
                     <span>${item.quantity}</span>
 
-                    <button onclick="increaseQty(${item.id})">+</button>
+                    <button onclick="increaseQty('${item.id}')">+</button>
 
                 </div>
 
                 <button
                     class="remove-btn"
-                    onclick="removeProduct(${item.id})">
+                    onclick="removeProduct('${item.id}')">
 
                     Remove
 

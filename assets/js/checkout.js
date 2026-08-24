@@ -26,7 +26,8 @@ if (checkoutCart.length > 0) {
         name: item.name,
         price: Number(item.price),
         quantity: Number(item.quantity) || 1,
-        image: item.image
+        image: item.image,
+        size: item.size
     }));
 
 } else if (buyNowOrder) {
@@ -36,7 +37,8 @@ if (checkoutCart.length > 0) {
         name: buyNowOrder.name,
         price: Number(buyNowOrder.price),
         quantity: 1,
-        image: buyNowOrder.image
+        image: buyNowOrder.image,
+        size: buyNowOrder.size
     }];
 
 } else {
@@ -47,29 +49,52 @@ if (checkoutCart.length > 0) {
 
 const summary = document.getElementById("orderSummary");
 
-const checkoutTotal = checkoutItems.reduce(
+const itemsTotal = checkoutItems.reduce(
     (total, item) => total + (item.price * item.quantity),
     0
 );
 
+const handlingFee = 5;
+const shippingFee = 0;
+
+// checkoutTotal is the grand total actually charged (items + handling + shipping)
+const checkoutTotal = itemsTotal + handlingFee + shippingFee;
+
 summary.innerHTML = checkoutItems.map(item => `
-    
-           <div class="checkout-product">
+    <div class="checkout-product">
         <img
             src="${item.image}"
-            width="120"
             alt="${item.name}"
-        > 
+        >
 
-        <div>
+        <div class="checkout-product-info">
             <h3>${item.name}</h3>
-            <p>Quantity: ${item.quantity}</p>
-            <h3>₹${item.price * item.quantity}</h3>
+            ${item.size ? `<p class="checkout-item-size">Size: ${item.size}</p>` : ""}
+            <p>Qty: ${item.quantity}</p>
         </div>
 
+        <div class="checkout-product-price">₹${item.price * item.quantity}</div>
+    </div>
 `).join("") + `
-    <hr>
-    <h2>Total: ₹${checkoutTotal}</h2>
+    <div class="price-breakdown">
+        <div class="breakdown-row">
+            <span>Items Total</span>
+            <span>₹${itemsTotal}</span>
+        </div>
+        <div class="breakdown-row">
+            <span>Shipping</span>
+            <span class="free-tag">FREE</span>
+        </div>
+        <div class="breakdown-row">
+            <span>Handling Fee</span>
+            <span>₹${handlingFee}</span>
+        </div>
+        <p class="gst-note">Inclusive of all taxes (GST included)</p>
+        <div class="breakdown-row breakdown-total">
+            <span>Grand Total</span>
+            <span>₹${checkoutTotal}</span>
+        </div>
+    </div>
 `;
 
 document

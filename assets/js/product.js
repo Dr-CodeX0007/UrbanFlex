@@ -6,6 +6,7 @@ const productDetails = document.getElementById("productDetails");
 let product = null;
 let currentImageIndex = 0;
 let productImages = [];
+let selectedSize = null;
 
 // Turns a number of days into an actual calendar date, e.g. "30 Aug".
 function getDeliveryDateText(days) {
@@ -34,6 +35,7 @@ async function loadProduct() {
             : ["assets/images/logo.png"];
 
         renderProduct();
+        loadRelatedProducts();
     } catch (error) {
         console.error(error);
         productDetails.innerHTML = "<h2>Unable to load product right now.</h2>";
@@ -64,6 +66,8 @@ function buildBulletList() {
 }
 
 function renderProduct() {
+
+    selectedSize = null;
 
     productDetails.innerHTML = `
 
@@ -120,6 +124,18 @@ function renderProduct() {
             </div>
 
             <p class="delivery-estimate">🚚 Delivery by ${getDeliveryDateText(product.deliveryDays)}</p>
+
+            ${product.availableSizes && product.availableSizes.length > 0 ? `
+            <div class="size-selector">
+                <p class="size-selector-label">Select Size:</p>
+                <div class="size-options" id="sizeOptions">
+                    ${product.availableSizes.map(size => `
+                        <button type="button" class="size-chip" data-size="${size}" onclick="selectSize('${size}')">${size}</button>
+                    `).join("")}
+                </div>
+                <p class="size-error" id="sizeError"></p>
+            </div>
+            ` : ""}
 
             <div class="product-buttons">
                 <button class="cart-btn" onclick="addToCart()">Add to Cart</button>
@@ -221,7 +237,29 @@ document.addEventListener("touchend", (e) => {
 
 loadProduct();
 
+function selectSize(size) {
+    selectedSize = size;
+
+    document.querySelectorAll(".size-chip").forEach((chip) => {
+        chip.classList.toggle("active", chip.dataset.size === size);
+    });
+
+    const sizeError = document.getElementById("sizeError");
+    if (sizeError) sizeError.innerText = "";
+}
+
+function validateSizeSelection() {
+    if (product.availableSizes && product.availableSizes.length > 0 && !selectedSize) {
+        const sizeError = document.getElementById("sizeError");
+        if (sizeError) sizeError.innerText = "Please select a size before continuing.";
+        return false;
+    }
+    return true;
+}
+
 function addToCart(){
+
+    if (!validateSizeSelection()) return;
 
     let cart = JSON.parse(localStorage.getItem("cart")) || [];
 
@@ -230,10 +268,11 @@ function addToCart(){
         name: product.name,
         price: product.price,
         image: (product.images && product.images[0]) || "assets/images/logo.png",
-        quantity: 1
+        quantity: 1,
+        size: selectedSize || undefined
     };
 
-    const existing = cart.find(item => item.id === cartItem.id);
+    const existing = cart.find(item => item.id === cartItem.id && item.size === cartItem.size);
 
     if(existing){
 
@@ -256,15 +295,56 @@ function addToCart(){
 
 function goToCheckout(){
 
+    if (!validateSizeSelection()) return;
+
     localStorage.removeItem("checkoutCart");
 
     localStorage.setItem("currentOrder", JSON.stringify({
         id: product._id,
         name: product.name,
         price: product.price,
-        image: (product.images && product.images[0]) || "assets/images/logo.png"
+        image: (product.images && product.images[0]) || "assets/images/logo.png",
+        size: selectedSize || undefined
     }));
 
     window.location.href = "checkout.html";
 
+}
+
+// ============================================================
+// Related products - same category, excluding the current one
+// ============================================================
+async function loadRelatedProducts() {
+    if (!product.category || !product.category._id) return;
+
+    try {
+        const res = await fetch(`${API_BASE_URL}/api/products?category=${product.category._id}`);
+        const categoryProducts = await res.json();
+
+        const related = categoryProducts.filter(p => p._id !== product._id).slice(0, 6);
+
+        if (related.length === 0) return;
+
+        const relatedSection = document.getElementById("relatedSection");
+        const relatedGrid = document.getElementById("relatedGrid");
+
+        relatedGrid.innerHTML = related.map(p => {
+            const mainImage = (p.images && p.images[0]) || "assets/images/logo.png";
+
+            return `
+                <div class="related-card" onclick="location.href='product.html?slug=${p.slug}'">
+                    <img src="${mainImage}" alt="${p.name}">
+                    <div class="related-name">${p.name}</div>
+                    <div class="related-price-row">
+                        <span class="related-price">₹${p.price}</span>
+                        ${p.discountPercent > 0 ? `<span class="related-mrp">₹${p.mrp}</span>` : ""}
+                    </div>
+                </div>
+            `;
+        }).join("");
+
+        relatedSection.style.display = "block";
+    } catch (error) {
+        console.error("Unable to load related products:", error);
+    }
 }

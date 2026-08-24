@@ -90,6 +90,18 @@
             <label class="field-label">Delivery Days</label>
             <input type="number" id="productDeliveryDays" placeholder="e.g. 5" min="1" value="5">
 
+            <div id="apparelSection" style="display:none;">
+                <label class="field-label">Garment Type (for apparel categories)</label>
+                <select id="productApparelType">
+                    <option value="">Not applicable</option>
+                    <option value="Upper">Upper</option>
+                    <option value="Bottom">Bottom</option>
+                </select>
+
+                <label class="field-label">Available Sizes</label>
+                <div id="sizeCheckboxRow" class="size-checkbox-row"></div>
+            </div>
+
             <label class="field-label">Description</label>
             <textarea id="productDescription" placeholder="Short paragraph about the product"></textarea>
 
