@@ -633,6 +633,10 @@ function setupProductForm() {
                 apparelType,
                 availableSizes
             };
+                        payload.apparelType = document.getElementById("productApparelType").value;
+            payload.availableSizes = Array.from(document.querySelectorAll("#sizeCheckboxRow input:checked")).map(cb => cb.value);
+
+            if (imageUrls) payload.images = imageUrls;
             if (imageUrls) payload.images = imageUrls;
 
             const url = editingProductId
@@ -692,6 +696,12 @@ function editProduct(id) {
     document.getElementById("productDescription").value = p.description || "";
     document.getElementById("productBullets").value = (p.bulletPoints || []).join("\n");
     document.getElementById("productBestseller").checked = !!p.isBestseller;
+
+        document.getElementById("productBestseller").checked = !!p.isBestseller;
+
+    checkApparelSection();
+    document.getElementById("productApparelType").value = p.apparelType || "";
+    renderSizeCheckboxes(p.apparelType || "", p.availableSizes || []);
 
     productImagePreview.innerHTML = (p.images || []).map((img) => `<img src="${img}">`).join("");
 

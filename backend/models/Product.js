@@ -60,6 +60,15 @@ const productSchema = new mongoose.Schema(
         stock: {
             type: Number,
             default: 100
+        },
+        apparelType: {
+            type: String,
+            enum: ["", "Upper", "Bottom"],
+            default: ""
+        },
+        availableSizes: {
+            type: [String],
+            default: []
         }
     },
     { timestamps: true }
