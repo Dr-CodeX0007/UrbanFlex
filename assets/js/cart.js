@@ -116,6 +116,11 @@ function increaseQty(id) {
 
     const item = cart.find(product => product.id === id);
 
+    if (!item) {
+        renderCart();
+        return;
+    }
+
     item.quantity++;
 
     renderCart();
@@ -125,6 +130,11 @@ function increaseQty(id) {
 function decreaseQty(id) {
 
     const item = cart.find(product => product.id === id);
+
+    if (!item) {
+        renderCart();
+        return;
+    }
 
     if (item.quantity > 1) {
 
