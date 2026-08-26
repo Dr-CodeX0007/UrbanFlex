@@ -1,6 +1,76 @@
 console.log("Hostname:", window.location.hostname);
 console.log("API_BASE_URL:", API_BASE_URL);
 
+// ===============================
+// COUNTRY CODE + PHONE VALIDATION
+// ===============================
+
+const COUNTRY_CODES = [
+    { name: "Afghanistan", code: "+93" }, { name: "Albania", code: "+355" },
+    { name: "Algeria", code: "+213" }, { name: "Argentina", code: "+54" },
+    { name: "Australia", code: "+61" }, { name: "Austria", code: "+43" },
+    { name: "Bahrain", code: "+973" }, { name: "Bangladesh", code: "+880" },
+    { name: "Belgium", code: "+32" }, { name: "Bhutan", code: "+975" },
+    { name: "Brazil", code: "+55" }, { name: "Canada", code: "+1" },
+    { name: "China", code: "+86" }, { name: "Colombia", code: "+57" },
+    { name: "Denmark", code: "+45" }, { name: "Egypt", code: "+20" },
+    { name: "Finland", code: "+358" }, { name: "France", code: "+33" },
+    { name: "Germany", code: "+49" }, { name: "Ghana", code: "+233" },
+    { name: "Greece", code: "+30" }, { name: "Hong Kong", code: "+852" },
+    { name: "Hungary", code: "+36" }, { name: "Iceland", code: "+354" },
+    { name: "India", code: "+91" }, { name: "Indonesia", code: "+62" },
+    { name: "Iran", code: "+98" }, { name: "Iraq", code: "+964" },
+    { name: "Ireland", code: "+353" }, { name: "Israel", code: "+972" },
+    { name: "Italy", code: "+39" }, { name: "Japan", code: "+81" },
+    { name: "Jordan", code: "+962" }, { name: "Kenya", code: "+254" },
+    { name: "Kuwait", code: "+965" }, { name: "Malaysia", code: "+60" },
+    { name: "Maldives", code: "+960" }, { name: "Mexico", code: "+52" },
+    { name: "Nepal", code: "+977" }, { name: "Netherlands", code: "+31" },
+    { name: "New Zealand", code: "+64" }, { name: "Nigeria", code: "+234" },
+    { name: "Norway", code: "+47" }, { name: "Oman", code: "+968" },
+    { name: "Pakistan", code: "+92" }, { name: "Philippines", code: "+63" },
+    { name: "Poland", code: "+48" }, { name: "Portugal", code: "+351" },
+    { name: "Qatar", code: "+974" }, { name: "Russia", code: "+7" },
+    { name: "Saudi Arabia", code: "+966" }, { name: "Singapore", code: "+65" },
+    { name: "South Africa", code: "+27" }, { name: "South Korea", code: "+82" },
+    { name: "Spain", code: "+34" }, { name: "Sri Lanka", code: "+94" },
+    { name: "Sweden", code: "+46" }, { name: "Switzerland", code: "+41" },
+    { name: "Thailand", code: "+66" }, { name: "Turkey", code: "+90" },
+    { name: "UAE", code: "+971" }, { name: "UK", code: "+44" },
+    { name: "USA", code: "+1" }, { name: "Vietnam", code: "+84" }
+].sort((a, b) => a.name.localeCompare(b.name));
+
+const countryCodeSelect = document.getElementById("countryCode");
+const phoneInput = document.getElementById("phone");
+const phoneError = document.getElementById("phoneError");
+
+if (countryCodeSelect) {
+    countryCodeSelect.innerHTML = COUNTRY_CODES.map(c =>
+        `<option value="${c.code}">${c.name} (${c.code})</option>`
+    ).join("");
+
+    // Default to India
+    countryCodeSelect.value = "+91";
+}
+
+// Strip anything that isn't a digit as the user types, live.
+phoneInput?.addEventListener("input", () => {
+    phoneInput.value = phoneInput.value.replace(/\D/g, "").slice(0, 10);
+    phoneError.innerText = "";
+});
+
+function validatePhone() {
+    const digitsOnly = phoneInput.value.trim();
+
+    if (!/^[0-9]{10}$/.test(digitsOnly)) {
+        phoneError.innerText = "Enter a valid 10-digit mobile number (numbers only).";
+        return false;
+    }
+
+    phoneError.innerText = "";
+    return true;
+}
+
 // Prefill name/email if the shopper is logged in
 if (typeof getCustomerData === "function") {
     const loggedInCustomer = getCustomerData();
@@ -57,45 +127,113 @@ const itemsTotal = checkoutItems.reduce(
 const handlingFee = 5;
 const shippingFee = 0;
 
-// checkoutTotal is the grand total actually charged (items + handling + shipping)
-const checkoutTotal = itemsTotal + handlingFee + shippingFee;
+// checkoutTotal is the grand total actually charged (items + handling + shipping - discount)
+// It's mutable because a coupon can change it after the page first loads.
+let discountAmount = 0;
+let appliedCouponCode = null;
+let checkoutTotal = itemsTotal + handlingFee + shippingFee;
 
-summary.innerHTML = checkoutItems.map(item => `
-    <div class="checkout-product">
-        <img
-            src="${item.image}"
-            alt="${item.name}"
-        >
+function renderSummary() {
+    summary.innerHTML = checkoutItems.map(item => `
+        <div class="checkout-product">
+            <img
+                src="${item.image}"
+                alt="${item.name}"
+            >
 
-        <div class="checkout-product-info">
-            <h3>${item.name}</h3>
-            ${item.size ? `<p class="checkout-item-size">Size: ${item.size}</p>` : ""}
-            <p>Qty: ${item.quantity}</p>
-        </div>
+            <div class="checkout-product-info">
+                <h3>${item.name}</h3>
+                ${item.size ? `<p class="checkout-item-size">Size: ${item.size}</p>` : ""}
+                <p>Qty: ${item.quantity}</p>
+            </div>
 
-        <div class="checkout-product-price">₹${item.price * item.quantity}</div>
-    </div>
-`).join("") + `
-    <div class="price-breakdown">
-        <div class="breakdown-row">
-            <span>Items Total</span>
-            <span>₹${itemsTotal}</span>
+            <div class="checkout-product-price">₹${item.price * item.quantity}</div>
         </div>
-        <div class="breakdown-row">
-            <span>Shipping</span>
-            <span class="free-tag">FREE</span>
+    `).join("") + `
+        <div class="price-breakdown">
+            <div class="breakdown-row">
+                <span>Items Total</span>
+                <span>₹${itemsTotal}</span>
+            </div>
+            <div class="breakdown-row">
+                <span>Shipping</span>
+                <span class="free-tag">FREE</span>
+            </div>
+            <div class="breakdown-row">
+                <span>Handling Fee</span>
+                <span>₹${handlingFee}</span>
+            </div>
+            ${discountAmount > 0 ? `
+            <div class="breakdown-row">
+                <span>Coupon (${appliedCouponCode})</span>
+                <span class="free-tag">− ₹${discountAmount}</span>
+            </div>
+            ` : ""}
+            <p class="gst-note">Inclusive of all taxes (GST included)</p>
+            <div class="breakdown-row breakdown-total">
+                <span>Grand Total</span>
+                <span>₹${checkoutTotal}</span>
+            </div>
         </div>
-        <div class="breakdown-row">
-            <span>Handling Fee</span>
-            <span>₹${handlingFee}</span>
-        </div>
-        <p class="gst-note">Inclusive of all taxes (GST included)</p>
-        <div class="breakdown-row breakdown-total">
-            <span>Grand Total</span>
-            <span>₹${checkoutTotal}</span>
-        </div>
-    </div>
-`;
+    `;
+}
+
+renderSummary();
+
+// ---------- Coupon apply ----------
+const couponInput = document.getElementById("couponInput");
+const applyCouponBtn = document.getElementById("applyCouponBtn");
+const couponMessage = document.getElementById("couponMessage");
+
+applyCouponBtn?.addEventListener("click", async () => {
+    const code = couponInput.value.trim().toUpperCase();
+
+    if (!code) {
+        couponMessage.innerText = "Enter a coupon code.";
+        couponMessage.className = "coupon-message error";
+        return;
+    }
+
+    try {
+        applyCouponBtn.disabled = true;
+        applyCouponBtn.innerText = "Checking...";
+
+        const preDiscountTotal = itemsTotal + handlingFee + shippingFee;
+
+        const res = await fetch(`${API_BASE_URL}/api/coupons/validate`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ code, orderTotal: preDiscountTotal })
+        });
+        const data = await res.json();
+
+        if (!data.success) {
+            couponMessage.innerText = data.message || "Invalid coupon.";
+            couponMessage.className = "coupon-message error";
+            discountAmount = 0;
+            appliedCouponCode = null;
+            checkoutTotal = preDiscountTotal;
+            renderSummary();
+            return;
+        }
+
+        discountAmount = data.coupon.discountAmount;
+        appliedCouponCode = data.coupon.code;
+        checkoutTotal = preDiscountTotal - discountAmount;
+
+        couponMessage.innerText = `Coupon applied! You saved ₹${discountAmount}.`;
+        couponMessage.className = "coupon-message success";
+
+        renderSummary();
+    } catch (error) {
+        console.error(error);
+        couponMessage.innerText = "Unable to validate coupon right now.";
+        couponMessage.className = "coupon-message error";
+    } finally {
+        applyCouponBtn.disabled = false;
+        applyCouponBtn.innerText = "Apply";
+    }
+});
 
 document
 .getElementById("payButton")
@@ -103,11 +241,16 @@ document
 
 async function startPayment() {
 
+    if (!validatePhone()) {
+        phoneInput.focus();
+        return;
+    }
+
     const customer = {
 
         name: document.getElementById("name").value.trim(),
 
-        phone: document.getElementById("phone").value.trim(),
+        phone: `${countryCodeSelect.value} ${phoneInput.value.trim()}`,
 
         email: document.getElementById("email").value.trim(),
 
@@ -126,7 +269,6 @@ async function startPayment() {
 
     if (
         !customer.name ||
-        !customer.phone ||
         !customer.address
     ) {
 
@@ -315,6 +457,10 @@ async function saveOrder(customer, payment) {
         price: checkoutTotal,
 
         total: checkoutTotal,
+
+        couponCode: appliedCouponCode || null,
+
+        discountAmount: discountAmount || 0,
 
         paymentId: payment.razorpay_payment_id,
 

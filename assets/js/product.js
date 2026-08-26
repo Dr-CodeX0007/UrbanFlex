@@ -15,11 +15,31 @@ function getDeliveryDateText(days) {
     return d.toLocaleDateString("en-IN", { day: "numeric", month: "short" });
 }
 
+// Shows a placeholder layout matching the product page while it loads.
+function showProductPageSkeleton() {
+    productDetails.innerHTML = `
+        <div class="product-page">
+            <div class="product-left">
+                <div class="skeleton-box" style="width:100%;aspect-ratio:1/1;border-radius:12px;"></div>
+            </div>
+            <div class="product-right">
+                <div class="skeleton-box skeleton-line" style="width:70%;height:28px;"></div>
+                <div class="skeleton-box skeleton-line" style="width:40%;height:16px;margin-top:14px;"></div>
+                <div class="skeleton-box" style="width:100%;height:90px;border-radius:12px;margin-top:14px;"></div>
+                <div class="skeleton-box skeleton-line" style="width:60%;height:16px;margin-top:16px;"></div>
+                <div class="skeleton-box" style="width:100%;height:48px;border-radius:8px;margin-top:16px;"></div>
+            </div>
+        </div>
+    `;
+}
+
 async function loadProduct() {
     if (!productSlug) {
         productDetails.innerHTML = "<h2>Product Not Found</h2>";
         return;
     }
+
+    showProductPageSkeleton();
 
     try {
         const res = await fetch(`${API_BASE_URL}/api/products/${productSlug}`);

@@ -2378,3 +2378,141 @@ padding-left:0;
     font-weight:600;
     margin:2px 0;
 }
+
+/* ===== Coupon box (checkout) ===== */
+
+.coupon-box{
+    display:flex;
+    gap:10px;
+    margin:16px 0 6px;
+}
+
+.coupon-box input{
+    flex:1;
+    padding:12px 14px;
+    border:1px solid #333;
+    border-radius:8px;
+    background:#111;
+    color:#fff;
+    outline:none;
+    font-size:14px;
+}
+
+.coupon-box input:focus{
+    border-color:#ff6b00;
+}
+
+.coupon-box button{
+    background:#333;
+    color:#fff;
+    border:none;
+    padding:12px 20px;
+    border-radius:8px;
+    cursor:pointer;
+    font-weight:600;
+    font-size:14px;
+    white-space:nowrap;
+}
+
+.coupon-box button:hover{
+    background:#ff6b00;
+}
+
+.coupon-message{
+    font-size:13px;
+    min-height:16px;
+    margin-bottom:8px;
+}
+
+.coupon-message.success{
+    color:#2e7d32;
+}
+
+.coupon-message.error{
+    color:#ff5252;
+}
+
+/* ===== Loading Skeletons ===== */
+
+.skeleton-box{
+    background:linear-gradient(90deg, #1e1e1e 25%, #2a2a2a 37%, #1e1e1e 63%);
+    background-size:400% 100%;
+    animation:skeleton-shimmer 1.4s ease infinite;
+    border-radius:6px;
+}
+
+@keyframes skeleton-shimmer{
+    0%{ background-position:100% 50%; }
+    100%{ background-position:0% 50%; }
+}
+
+.skeleton-card{
+    cursor:default;
+    pointer-events:none;
+}
+
+.skeleton-img{
+    width:100%;
+    height:220px;
+    border-radius:0;
+}
+
+.skeleton-line{
+    height:14px;
+}
+
+.skeleton-chip{
+    align-items:center;
+    cursor:default;
+}
+
+.skeleton-circle{
+    width:24px;
+    height:24px;
+    border-radius:50%;
+}
+
+/* ===== Phone number with country code (checkout) ===== */
+
+.phone-group{
+    display:flex;
+    gap:8px;
+}
+
+.phone-group select{
+    flex:0 0 150px;
+    padding:12px 8px;
+    border:1px solid #333;
+    border-radius:8px;
+    background:#111;
+    color:#fff;
+    outline:none;
+    font-size:13px;
+}
+
+.phone-group select:focus{
+    border-color:#ff6b00;
+}
+
+.phone-group input{
+    flex:1;
+    min-width:0;
+}
+
+.field-error{
+    color:#ff5252;
+    font-size:12px;
+    margin:-10px 0 6px;
+    min-height:14px;
+}
+
+@media(max-width:500px){
+    .phone-group{
+        flex-direction:column;
+    }
+
+    .phone-group select{
+        flex:none;
+        width:100%;
+    }
+}

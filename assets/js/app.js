@@ -127,7 +127,33 @@ function applyFiltersAndRender() {
     displayProducts(result);
 }
 
+// Shows placeholder skeleton cards while products are being fetched.
+function showProductSkeletons(count = 8) {
+    productContainer.innerHTML = Array.from({ length: count }).map(() => `
+        <div class="product-card skeleton-card">
+            <div class="skeleton-box skeleton-img"></div>
+            <div class="skeleton-box skeleton-line" style="width:80%;margin-top:14px;"></div>
+            <div class="skeleton-box skeleton-line" style="width:50%;margin-top:8px;"></div>
+            <div class="skeleton-box skeleton-line" style="width:60%;margin-top:12px;height:24px;"></div>
+        </div>
+    `).join("");
+}
+
+// Shows placeholder skeleton chips while categories are being fetched.
+function showCategorySkeletons(count = 5) {
+    if (!categoriesRow) return;
+
+    categoriesRow.innerHTML = Array.from({ length: count }).map(() => `
+        <div class="category-chip skeleton-chip">
+            <div class="skeleton-box skeleton-circle"></div>
+            <div class="skeleton-box skeleton-line" style="width:40px;height:10px;"></div>
+        </div>
+    `).join("");
+}
+
 async function loadProducts() {
+    showProductSkeletons();
+
     try {
         const res = await fetch(`${API_BASE_URL}/api/products`);
         allProducts = await res.json();
@@ -140,6 +166,8 @@ async function loadProducts() {
 
 async function loadCategories() {
     if (!categoriesRow) return;
+
+    showCategorySkeletons();
 
     try {
         const res = await fetch(`${API_BASE_URL}/api/categories`);

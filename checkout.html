@@ -41,7 +41,11 @@
 
             <input type="text" id="name" placeholder="Full Name" required>
 
-            <input type="tel" id="phone" placeholder="Phone Number" required>
+            <div class="phone-group">
+                <select id="countryCode"></select>
+                <input type="tel" id="phone" placeholder="10-digit mobile number" required maxlength="10" inputmode="numeric">
+            </div>
+            <p class="field-error" id="phoneError"></p>
 
             <input type="email" id="email" placeholder="Email (Optional)">
 
@@ -89,6 +93,12 @@
             <h2>Order Summary</h2>
 
             <div id="orderSummary"></div>
+
+            <div class="coupon-box">
+                <input type="text" id="couponInput" placeholder="Enter coupon code" style="text-transform:uppercase;">
+                <button type="button" id="applyCouponBtn">Apply</button>
+            </div>
+            <p class="coupon-message" id="couponMessage"></p>
 
             <button id="payButton">
 

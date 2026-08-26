@@ -87,9 +87,11 @@ function initAdminPanel() {
     loadOrders();
     loadCategories();
     loadProducts();
+    loadCoupons();
 
     setupProductForm();
     setupCategoryForm();
+    setupCouponForm();
 }
 
 // ============================================================
@@ -734,6 +736,115 @@ async function removeProduct(id) {
     } catch (error) {
         console.error(error);
         alert("Unable to delete product.");
+    }
+}
+
+
+
+// ============================================================
+// COUPONS
+// ============================================================
+let coupons = [];
+
+const couponForm = document.getElementById("couponForm");
+const couponsContainer = document.getElementById("couponsContainer");
+const couponSubmitBtn = document.getElementById("couponSubmitBtn");
+
+async function loadCoupons() {
+    if (!couponsContainer) return;
+
+    try {
+        const res = await fetch(`${API}/api/coupons`, { headers: authHeaders() });
+        coupons = await res.json();
+        renderCoupons();
+    } catch (error) {
+        console.error(error);
+    }
+}
+
+function renderCoupons() {
+    if (coupons.length === 0) {
+        couponsContainer.innerHTML = "<p>No coupons yet.</p>";
+        return;
+    }
+
+    couponsContainer.innerHTML = coupons.map((c) => `
+        <div class="admin-card">
+            <h4>${c.code}</h4>
+            <p>${c.discountType === "percent" ? c.discountValue + "% off" : "₹" + c.discountValue + " off"}
+               ${c.minOrderValue > 0 ? ` (min order ₹${c.minOrderValue})` : ""}</p>
+            <p>${c.expiryDate ? "Expires: " + new Date(c.expiryDate).toLocaleDateString() : "No expiry"}
+               • ${c.isActive ? "Active" : "Inactive"}</p>
+            <div class="admin-card-actions">
+                <button class="delete-btn" onclick="removeCoupon('${c._id}')">Delete</button>
+            </div>
+        </div>
+    `).join("");
+}
+
+function setupCouponForm() {
+    if (!couponForm) return;
+
+    couponForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const code = document.getElementById("couponCode").value.trim().toUpperCase();
+        const discountType = document.getElementById("couponDiscountType").value;
+        const discountValue = Number(document.getElementById("couponDiscountValue").value);
+        const minOrderValue = Number(document.getElementById("couponMinOrder").value) || 0;
+        const expiryDate = document.getElementById("couponExpiry").value || null;
+        const isActive = document.getElementById("couponActive").checked;
+
+        if (!code || !discountValue) {
+            alert("Coupon code and discount value are required.");
+            return;
+        }
+
+        try {
+            couponSubmitBtn.disabled = true;
+
+            const res = await fetch(`${API}/api/coupons`, {
+                method: "POST",
+                headers: authHeaders(),
+                body: JSON.stringify({ code, discountType, discountValue, minOrderValue, expiryDate, isActive })
+            });
+            const data = await res.json();
+
+            if (!data.success) {
+                alert(data.message || "Something went wrong.");
+                return;
+            }
+
+            couponForm.reset();
+            document.getElementById("couponActive").checked = true;
+            loadCoupons();
+        } catch (error) {
+            console.error(error);
+            alert("Unable to save coupon.");
+        } finally {
+            couponSubmitBtn.disabled = false;
+        }
+    });
+}
+
+async function removeCoupon(id) {
+    if (!confirm("Delete this coupon?")) return;
+
+    try {
+        const res = await fetch(`${API}/api/coupons/${id}`, {
+            method: "DELETE",
+            headers: authHeaders()
+        });
+        const data = await res.json();
+
+        if (data.success) {
+            loadCoupons();
+        } else {
+            alert(data.message);
+        }
+    } catch (error) {
+        console.error(error);
+        alert("Unable to delete coupon.");
     }
 }
 
