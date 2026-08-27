@@ -826,15 +826,12 @@ header{
 
 }
 
-/* ===== Trust Icons Row ===== */
+/* ===== Trust Icons Row (premium green, individual boxes) ===== */
 
 .trust-icons{
     display:flex;
     justify-content:space-between;
     gap:8px;
-    background:#1a1a1a;
-    border-radius:10px;
-    padding:18px 10px;
     margin-bottom:28px;
 }
 
@@ -843,20 +840,43 @@ header{
     flex-direction:column;
     align-items:center;
     text-align:center;
-    gap:6px;
+    gap:8px;
     flex:1;
+    background:#1b1b1b;
+    border:1px solid #ff6b00;
+    border-radius:12px;
+    padding:14px 6px;
+    transition:.25s;
+}
+
+.trust-icon:hover{
+    border-color:#ff6b00;
+    transform:translateY(-3px);
+    box-shadow:0 8px 20px rgba(255,107,0,.12);
+}
+
+.trust-icon-badge{
+    width:40px;
+    height:40px;
+    border-radius:50%;
+    background:#141414;
+    border:1px solid #333;
+    display:flex;
+    align-items:center;
+    justify-content:center;
 }
 
 .trust-icon svg{
-    width:26px;
-    height:26px;
+    width:20px;
+    height:20px;
     color:#ff6b00;
 }
 
 .trust-icon span{
     font-size:11px;
-    color:#ccc;
+    color:#bbb;
     line-height:1.4;
+    font-weight:500;
 }
 
 /* ===== About this item (bullet points) ===== */
@@ -927,16 +947,22 @@ header{
 
 .trust-icons{
     flex-wrap:wrap;
-    padding:14px 8px;
+    gap:8px;
 }
 
 .trust-icon{
     flex:1 1 30%;
+    padding:10px 4px;
 }
 
 .trust-icon svg{
-    width:22px;
-    height:22px;
+    width:18px;
+    height:18px;
+}
+
+.trust-icon-badge{
+    width:36px;
+    height:36px;
 }
 
 .trust-icon span{
