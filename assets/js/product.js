@@ -62,16 +62,18 @@ async function loadProduct() {
     }
 }
 
-// Builds the "About this item" bullet list.
-// Uses admin-entered bullet points if available, otherwise
-// breaks the description into readable sentence bullets.
+// Builds the description paragraph, if one exists.
+function buildDescription() {
+    if (!product.description) return "";
+
+    return `<p class="product-description-text">${product.description}</p>`;
+}
+
+// Builds the "About this item" bullet list from admin-entered bullet points.
 function buildBulletList() {
     let points = product.bulletPoints && product.bulletPoints.length > 0
         ? product.bulletPoints
-        : (product.description || "")
-            .split(".")
-            .map(s => s.trim())
-            .filter(s => s.length > 0);
+        : [];
 
     if (points.length === 0) return "";
 
@@ -377,4 +379,161 @@ async function loadRelatedProducts() {
     } catch (error) {
         console.error("Unable to load related products:", error);
     }
+}
+
+// ============================================================
+// OVERRIDE: full renderProduct + helpers, guaranteed to show
+// the description paragraph regardless of earlier partial edits.
+// (Re-declaring these functions here safely replaces any
+// earlier/broken versions above, thanks to JS hoisting.)
+// ============================================================
+
+function buildDescription() {
+    if (!product.description) return "";
+    return `<p class="product-description-text">${product.description}</p>`;
+}
+
+function buildBulletList() {
+    let points = product.bulletPoints && product.bulletPoints.length > 0
+        ? product.bulletPoints
+        : [];
+
+    if (points.length === 0) return "";
+
+    return `
+        <div class="about-item">
+            <h3>About this item</h3>
+            <ul class="bullet-points">
+                ${points.map(point => `<li>${point}</li>`).join("")}
+            </ul>
+        </div>
+    `;
+}
+
+function renderProduct() {
+
+    selectedSize = null;
+
+    productDetails.innerHTML = `
+
+    <div class="product-page">
+
+        <div class="product-left">
+
+            <div class="image-slider">
+                <div class="slider-main-wrap">
+                    <button class="slider-arrow slider-prev" onclick="prevImage()">&#10094;</button>
+                    <img src="${productImages[0]}" alt="${product.name}" id="mainProductImage" class="slider-main-img">
+                    <button class="slider-arrow slider-next" onclick="nextImage()">&#10095;</button>
+                </div>
+
+                <div class="slider-dots" id="sliderDots"></div>
+
+                ${productImages.length > 1 ? `
+                <div class="thumbnail-row">
+                    ${productImages.map((img, index) => `
+                        <img
+                            src="${img}"
+                            class="thumbnail ${index === 0 ? "active" : ""}"
+                            onclick="showImage(${index})"
+                        >
+                    `).join("")}
+                </div>
+                ` : ""}
+            </div>
+
+        </div>
+
+        <div class="product-right">
+
+            <h1>${product.name}</h1>
+            ${product.isBestseller ? `<span class="bestseller-badge">Bestseller</span>` : ""}
+
+            <div class="price-row">
+                ${product.discountPercent > 0 ? `
+                    <div class="discount-row">
+                        <span class="discount-tag">🔥 ${product.discountPercent}% OFF</span>
+                    </div>
+                ` : ""}
+                <div class="price-line">
+                    ${product.discountPercent > 0 ? `<span class="mrp-strike">₹${product.mrp}</span>` : ""}
+                    <span class="price">₹${product.price}</span>
+                </div>
+                ${product.discountPercent > 0 ? `
+                    <span class="savings-text">You save ₹${product.mrp - product.price}</span>
+                ` : ""}
+            </div>
+
+            <div class="return-badge">
+                🔄 7 Days Return &amp; Replace — No Questions Asked
+            </div>
+
+            <p class="delivery-estimate">🚚 Delivery by ${getDeliveryDateText(product.deliveryDays)}</p>
+
+            ${product.availableSizes && product.availableSizes.length > 0 ? `
+            <div class="size-selector">
+                <p class="size-selector-label">Select Size:</p>
+                <div class="size-options" id="sizeOptions">
+                    ${product.availableSizes.map(size => `
+                        <button type="button" class="size-chip" data-size="${size}" onclick="selectSize('${size}')">${size}</button>
+                    `).join("")}
+                </div>
+                <p class="size-error" id="sizeError"></p>
+            </div>
+            ` : ""}
+
+            <div class="product-buttons">
+                <button class="cart-btn" onclick="addToCart()">Add to Cart</button>
+                <button class="buy-btn" onclick="goToCheckout()">Buy Now</button>
+            </div>
+
+            <div class="trust-icons">
+
+                <div class="trust-icon">
+                    <div class="trust-icon-badge">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2l7 3v6c0 5-3.5 8.5-7 10-3.5-1.5-7-5-7-10V5l7-3z"/><path d="M9 12l2 2 4-4"/></svg>
+                    </div>
+                    <span>1 Year<br>Warranty</span>
+                </div>
+
+                <div class="trust-icon">
+                    <div class="trust-icon-badge">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/></svg>
+                    </div>
+                    <span>7 Days<br>Returnable</span>
+                </div>
+
+                <div class="trust-icon">
+                    <div class="trust-icon-badge">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="1" y="7" width="15" height="10" rx="1"/><path d="M16 10h3l3 3v4h-6z"/><circle cx="6" cy="19" r="1.6"/><circle cx="18" cy="19" r="1.6"/></svg>
+                    </div>
+                    <span>Free<br>Delivery</span>
+                </div>
+
+                <div class="trust-icon">
+                    <div class="trust-icon-badge">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
+                    </div>
+                    <span>Secure<br>Transaction</span>
+                </div>
+
+                <div class="trust-icon">
+                    <div class="trust-icon-badge">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2l2.4 5.5L20 8l-4.5 3.9L16.9 18 12 14.8 7.1 18l1.4-6.1L4 8l5.6-.5z"/></svg>
+                    </div>
+                    <span>UrbanFlex<br>Delivered</span>
+                </div>
+
+            </div>
+
+            ${buildDescription()}
+            ${buildBulletList()}
+
+        </div>
+
+    </div>
+
+    `;
+
+    buildSliderDots();
 }

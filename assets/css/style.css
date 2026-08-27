@@ -2542,3 +2542,10 @@ padding-left:0;
         width:100%;
     }
 }
+
+.product-description-text{
+    color:#ccc;
+    font-size:15px;
+    line-height:1.7;
+    margin:20px 0;
+}
