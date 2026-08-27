@@ -390,7 +390,10 @@ async function loadRelatedProducts() {
 
 function buildDescription() {
     if (!product.description) return "";
-    return `<p class="product-description-text">${product.description}</p>`;
+    return `
+        <p class="product-description-text clamped" id="descriptionText">${product.description}</p>
+        <button type="button" class="see-more-btn" id="seeMoreBtn" onclick="toggleDescription()">See more details</button>
+    `;
 }
 
 function buildBulletList() {
@@ -536,4 +539,26 @@ function renderProduct() {
     `;
 
     buildSliderDots();
+    initDescriptionToggle();
+}
+
+function initDescriptionToggle() {
+    const textEl = document.getElementById("descriptionText");
+    const btnEl = document.getElementById("seeMoreBtn");
+
+    if (!textEl || !btnEl) return;
+
+    // Only show the "See more" button if the text actually overflows 2 lines.
+    if (textEl.scrollHeight <= textEl.clientHeight + 2) {
+        btnEl.style.display = "none";
+    }
+}
+
+function toggleDescription() {
+    const textEl = document.getElementById("descriptionText");
+    const btnEl = document.getElementById("seeMoreBtn");
+
+    const isExpanded = textEl.classList.toggle("expanded");
+    textEl.classList.toggle("clamped", !isExpanded);
+    btnEl.innerText = isExpanded ? "See less" : "See more details";
 }
